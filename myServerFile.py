@@ -2,6 +2,7 @@ import string
 from tokenize import String
 from turtle import title
 from flask import Flask, json
+from flask_cors import CORS
 from ytmusicapi import YTMusic
 from flask import request
 from json import JSONEncoder
@@ -12,6 +13,8 @@ ytmusic = YTMusic()
 companies = [{"id": 1, "name": "Company One"}, {"id": 2, "name": "Company Two"}]
 
 api = Flask(__name__)
+#cors = CORS(api, resources={r"/api/*": {"origins": "*"}})
+CORS(api)
 
 class AlbumArt:
     type = ""
@@ -74,17 +77,27 @@ def convert_video_song(video_metadata):
     song.album_arts.append(aa_l)
     return song
 
+queue = []
 
-@api.route('/companies', methods=['GET'])
+
+@api.route('/api/queue/', methods=['GET'])
+def get_queue():
+    return queue
+
+@api.route("/")
+def helloWorld():
+   return "Hello, cross-origin-world!"
+
+@api.route('/api/companies/', methods=['GET'])
 def get_companies():
     return json.dumps(companies)
 
-@api.route('/search_songs', methods=['GET'])
+@api.route('/api/search/', methods=['POST'])
 def get_results():
     print("hi")
     user_search = str(request.data)
     search_results = ytmusic.search(user_search, filter="songs", limit=10)
-    print("foundres")
+    print("founders")
     #search_result_list = json.JSONDecoder.decode(search_results)
     print("converted results")
     songs = []
