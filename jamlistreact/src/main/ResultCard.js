@@ -4,25 +4,39 @@ import styled from "styled-components";
 const RSTContainer = styled.div`
 display: flex;
 flex-flow: row no-wrap;
-margin: 0;
-padding: 1em;
+overflow: hidden;
+max-height: 4em;
+width:auto;
+margin-left: 0;
+padding: 0.1em;
+transition: ease-in-out 0.2s;
+&:hover {
+    background-color: rgb(25,25,25);
+}
 `;
-const RSLContainer = styled.div`
+const SongInfo = styled.div`
 display: flex;
-flex-flow: column no-wrap;
+text-align: left;
+flex-direction: column;
 margin: 0;
-padding: 1em;
+padding: 0.2em;
 `;
 
 const Title = styled.h4`
 font-weight: bold;
+margin: 0;
+overflow: hidden;
 
 `;
 const Info = styled.h4`
 font-weight: normal;
+margin: 0;
+white-space: nowrap;
+overflow: hidden;
 `;
 
 const Thumbnail = styled.img`
+overflow: hidden;
 min-width:3em;
 min-height:3em;
 max-width:3em;
@@ -37,23 +51,31 @@ function ResultCard(props){
         setImgsrc(props.payload.album_arts[1].link);
     }
     
+    function truncate(text, maxlength){
+        if(text.length>maxlength){
+            return text.slice(0, maxlength) + "..."
+        }
+        else{
+            return text;
+        }
+    }
     function getInfoString(){
-        return `${props.payload.isExplicit ? 'E' : ''} • ${props.payload.artists.join(' & ')} •  ${props.payload.album}`
+        return truncate(`${props.payload.isExplicit ? 'E •' : ''}  ${props.payload.artists.join(' & ')} •  ${props.payload.album}`, 43);
     }
 
 
 return (
 <RSTContainer>
-<Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt={props.payload.album} onError={() => OnError()} > 
+<Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} > 
 </Thumbnail>
-<RSLContainer>
+<SongInfo>
     <Title>
     {props.payload.title}
     </Title>
     <Info>
     {getInfoString()}
     </Info>
-</RSLContainer>
+</SongInfo>
 </RSTContainer>
 );
 }

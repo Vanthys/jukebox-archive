@@ -10,33 +10,43 @@ flex-direction : column;
 justify-content: center;
 text-align: center;
 align-items: center;
-width : 80%;
+width : 60%;
 margin: auto;
+padding: 0;
+@media only screen and (max-width: 768px) {
 
+ width: 90%;
+    
+  }
 `;
 
 const SearchContainer = styled.div`
-width: 70%;
+width: 100%;
 display: flex;
 background-color: var(--main-color);
-flex-flow: column wrap;
+flex-direction: column;
 margin: 0;
-padding: 0;
+padding: 0 0.2em 0 0;
+box-shadow: 0 8px 20px 0 rgba(0,0,0,0.25);
 `;
 
 
 const InputContainer = styled.div`
-width: 100%;
+width: auto;
 display: flex;
 background-color: var(--main-color);
 flex-flow: row no-wrap;
-box-shadow: 0 8px 20px 0 rgba(0,0,0,0.25);
-margin-bottom: 3em;
-padding: 0.1em 0.1em 0.1em 1em ;
-`;
 
+
+padding: 0.1em 0.1em 0.1em 0.1em ;
+`;
+const Spacer = styled.div`
+width: 0.5em;
+min-width: 0.5em;
+height: 100%;
+`;
 const SearchBar = styled.input`
-width: 95%;
+width: calc(100% - 2.5em);
 background-color : var(--main-color);
 color: white !important;
 outline: none;
@@ -61,6 +71,7 @@ font-size: 1.5em;
 `;
 
 const SearchButton = styled.button`
+margin-left: auto;
 outline: 0;
 border: 0;
 font-size: 1.35em;
@@ -185,6 +196,7 @@ class FrontPage extends React.Component{
                 <h1>Jukebox</h1>
                 <SearchContainer>
                     <InputContainer>
+                    <Spacer/>
                     <SearchBar ref={this.linkref} placeholder="Search for title..." aria-placeholder="Search for title..."
                     onChange={() => this.inputHandle()}
                     />
