@@ -52,7 +52,8 @@ def convert_video_song(video_metadata):
     song.isExplicit = video_metadata["isExplicit"]
     
     tmb = video_metadata["thumbnails"][0]
-    url = tmb["url"][:-14]
+    url = str(tmb["url"])
+    url = url.split('=')[0] + "="
     size = len(url)
 
     aa_s = AlbumArt()
@@ -95,7 +96,8 @@ def get_companies():
 @api.route('/api/search/', methods=['POST'])
 def get_results():
     print("hi")
-    user_search = str(request.data)
+    user_search = str(request.data)[2:-1]
+    print(user_search)
     search_results = ytmusic.search(user_search, filter="songs", limit=10)
     print("founders")
     #search_result_list = json.JSONDecoder.decode(search_results)
