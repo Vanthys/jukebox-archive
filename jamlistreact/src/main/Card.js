@@ -1,4 +1,5 @@
 import React from "react";
+import {useState} from "react";
 import styled from "styled-components";
 
 const CardContainer = styled.div`
@@ -20,8 +21,11 @@ transition: ease-in-out 0.2s;
 `;
 
 const Thumbnail = styled.img`
-width: 100%;
-
+overflow: hidden;
+min-width:3em;
+min-height:3em;
+max-width:3em;
+max-height:3em;
 `;
 
 const ThumbContainer = styled.div`
@@ -65,7 +69,13 @@ flex-direction: column;
 
 
 function Card(props){
+    const [imgsrc, setImgsrc] = useState(props.payload.album_arts[0].link);
     
+    function OnError(){
+        setImgsrc(props.payload.album_arts[1].link);
+    }
+    
+
     const DoVote = async(link, type) => {
         let vote = {
             target : link,
@@ -88,8 +98,9 @@ function Card(props){
     return (
         <CardContainer>
             <ThumbContainer>
-            <Thumbnail src={props.payload.thumbnail_url} alt="Thumbnail"></Thumbnail>
-            </ThumbContainer>
+            <Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} > 
+            </Thumbnail>
+         </ThumbContainer>
             <InformationContainer>
             <h2>{props.payload.title}</h2>
             <h3>{props.payload.author}</h3>

@@ -35,7 +35,7 @@ white-space: nowrap;
 overflow: hidden;
 `;
 
-const Thumbnail = styled.img`
+export const Thumbnail = styled.img`
 overflow: hidden;
 min-width:3em;
 min-height:3em;
@@ -63,7 +63,7 @@ function ResultCard(props){
         return truncate(`${props.payload.isExplicit ? 'E •' : ''}  ${props.payload.artists.join(' & ')} •  ${props.payload.album}`, 43);
     }
 
-console.log(props);
+//console.log(props);
 return (
 <RSTContainer onClick={(event) => props.onClick(props.payload)}>
 <Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} > 

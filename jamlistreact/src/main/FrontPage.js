@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Card from "./Card";
 import { debounce } from "lodash";
 import ResultCard from "./ResultCard";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Container = styled.div`
 display : flex;
@@ -175,12 +177,29 @@ class FrontPage extends React.Component{
     }
 
     reqeuestQueue = debounce(async (payload) =>{
-        await this.queue(payload).then(()=>{
+        // toast.success('Request Submitted!🎵', {
+        //     position: "bottom-right",
+        //     autoClose: 5000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //     theme: "dark",
+        //     });
+        
+        await toast.promise(async () => {this.queue(payload).then(()=>{
             fetch(baseurl + '/api/queue/',{ mode: 'cors'})
             .then((response) => response.json())
-            .then((data) => this.setState({mList : data}));
+            .then((data) => this.setState({mList : data}))
+            .then(() => {this.linkref.current.value = ""; this.setState({results : []})});
+        })}, {
+            pending: 'Request is pending...',
+            success: 'Request submitted 🎵',
+            error: 'Request rejected 🤯'
+
         });
-    });
+    }); 
 
     debouncedSearch = debounce(async (input) => {
         await this.search(this.linkref.current.value).then( (result) =>
@@ -242,7 +261,18 @@ class FrontPage extends React.Component{
                     return <Card payload={obj}  key={index} />;
                 })}
                 
-
+                <ToastContainer
+position="bottom-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="dark"
+/>
             </Container>
 
         );
