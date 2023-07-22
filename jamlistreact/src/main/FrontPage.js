@@ -160,6 +160,27 @@ class FrontPage extends React.Component{
         return response.json();
 
     }
+    async queue(payload) {
+        const response = await fetch(baseurl + '/api/queue/',
+        {
+            method: 'POST',
+            mode: 'cors',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({payload : payload})
+        })
+        return response.json();
+    }
+
+    reqeuestQueue = debounce(async (payload) =>{
+        await this.queue(payload).then(()=>{
+            fetch(baseurl + '/api/queue/',{ mode: 'cors'})
+            .then((response) => response.json())
+            .then((data) => this.setState({mList : data}));
+        });
+    });
 
     debouncedSearch = debounce(async (input) => {
         await this.search(this.linkref.current.value).then( (result) =>
@@ -189,6 +210,8 @@ class FrontPage extends React.Component{
         return response.json(); // parses JSON response into native JavaScript objects
     }
 
+    
+
     //https://www.youtube.com/watch?v=fNPCmbDYY80
     render (){
         return(
@@ -208,7 +231,7 @@ class FrontPage extends React.Component{
                     
                     {this.state.results.slice(0, 5).map((obj, index) => {
                     return <ResultCard key={index}
-                    payload={obj}
+                    payload={obj} onClick={(payload) => this.reqeuestQueue(payload) }
                     />;
                 })}
                 </SearchContainer>

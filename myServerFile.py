@@ -1,6 +1,5 @@
 import string
 from tokenize import String
-from turtle import title
 from flask import Flask, json
 from flask_cors import CORS
 from ytmusicapi import YTMusic
@@ -80,6 +79,12 @@ def convert_video_song(video_metadata):
 
 queue = []
 
+@api.route('/api/queue/', methods=['POST'])
+def add_queue():
+    jsonres = json.loads(request.data)
+    queue.append(jsonres["payload"])
+    print(queue)
+    return queue
 
 @api.route('/api/queue/', methods=['GET'])
 def get_queue():

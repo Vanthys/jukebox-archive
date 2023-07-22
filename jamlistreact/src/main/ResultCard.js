@@ -63,9 +63,9 @@ function ResultCard(props){
         return truncate(`${props.payload.isExplicit ? 'E •' : ''}  ${props.payload.artists.join(' & ')} •  ${props.payload.album}`, 43);
     }
 
-
+console.log(props);
 return (
-<RSTContainer>
+<RSTContainer onClick={(event) => props.onClick(props.payload)}>
 <Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} > 
 </Thumbnail>
 <SongInfo>
