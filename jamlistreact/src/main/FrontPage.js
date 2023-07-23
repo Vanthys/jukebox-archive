@@ -262,7 +262,7 @@ class FrontPage extends React.Component {
         return (
             <SkeletonTheme baseColor="#202020" highlightColor="#444">
             <Container>
-                <h1>Jukebox</h1>
+                <h1 style={{"fontFamily": "'Lobster', cursive"}}>Jukebox</h1>
                 <SearchContainer>
                     <InputContainer>
                         <Spacer />
@@ -289,6 +289,7 @@ class FrontPage extends React.Component {
                     
                     return <Card payload={obj} key={index} />;
                 })}
+                
 
                 <ToastContainer
                     position="bottom-right"
