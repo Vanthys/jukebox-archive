@@ -82,7 +82,11 @@ queue = []
 @api.route('/api/queue/', methods=['POST'])
 def add_queue():
     jsonres = json.loads(request.data)
-    queue.append(jsonres["payload"])
+    song = jsonres["payload"]
+    if song not in queue:
+        queue.append(song)
+    else:
+        print(song)
     print(queue)
     return queue
 

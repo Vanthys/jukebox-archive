@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const RSTContainer = styled.div`
 display: flex;
@@ -16,6 +18,7 @@ transition: ease-in-out 0.2s;
 `;
 const SongInfo = styled.div`
 display: flex;
+flex: 1;
 text-align: left;
 flex-direction: column;
 margin: 0;
@@ -44,11 +47,18 @@ max-height:3em;
 
 `;
 
-function ResultCard(props){
-    const [imgsrc, setImgsrc] = useState(props.payload.album_arts[0].link);
+function ResultCard({payload, onClick}){
+
+    
+    const [imgsrc, setImgsrc] = useState(false);
+    useEffect(()=>{
+        if(payload){
+            setImgsrc(payload.album_arts[0].link)
+        }
+    },[payload])
     
     function OnError(){
-        setImgsrc(props.payload.album_arts[1].link);
+        setImgsrc(payload.album_arts[1].link);
     }
     
     function truncate(text, maxlength){
@@ -60,20 +70,21 @@ function ResultCard(props){
         }
     }
     function getInfoString(){
-        return truncate(`${props.payload.isExplicit ? 'E •' : ''}  ${props.payload.artists.join(' & ')} •  ${props.payload.album}`, 43);
+        return truncate(`${payload.isExplicit ? '🅴 •' : ''}  ${payload.artists.join(' & ')} •  ${payload.album}`, 43);
     }
 
 //console.log(props);
 return (
-<RSTContainer onClick={(event) => props.onClick(props.payload)}>
-<Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} > 
-</Thumbnail>
+<RSTContainer onClick={(event) => payload ? onClick(payload): null}>
+{imgsrc ? (<Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} />) :
+(<Skeleton height={"3em"} width={"3em"}/>)}
 <SongInfo>
     <Title>
-    {props.payload.title}
+    
+    {payload ? truncate(payload.title, 36) : <Skeleton/>}
     </Title>
     <Info>
-    {getInfoString()}
+    {payload ? getInfoString() : <Skeleton/>}
     </Info>
 </SongInfo>
 </RSTContainer>
