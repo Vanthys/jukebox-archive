@@ -55,8 +55,17 @@ function ResultCard({payload, onClick}){
         if(payload){
             setImgsrc(payload.album_arts[0].link)
         }
+        setImageIsLoading(true);
+        
     },[payload])
     
+    const [isImageLoading, setImageIsLoading] = useState(true);
+
+  // Function to handle image load
+  function handleImageLoad() {
+    setImageIsLoading(false);
+    };
+
     function OnError(){
         setImgsrc(payload.album_arts[1].link);
     }
@@ -76,8 +85,11 @@ function ResultCard({payload, onClick}){
 //console.log(props);
 return (
 <RSTContainer onClick={(event) => payload ? onClick(payload): null}>
-{imgsrc ? (<Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} />) :
-(<Skeleton height={"3em"} width={"3em"}/>)}
+{((!imgsrc))
+?   (<Skeleton height={"3em"} width={"3em"}/>) 
+:   (<Thumbnail referrerpolicy="no-referrer" src={imgsrc} alt="" onError={() => OnError()} style={{display: isImageLoading ? 'none' : 'block'}} onLoad={() => handleImageLoad()}/>)
+}
+{imgsrc && isImageLoading && (<Skeleton height={"3em"} width={"3em"}/>) }
 <SongInfo>
     <Title>
     

@@ -137,7 +137,7 @@ class FrontPage extends React.Component {
         let url = {
             link: this.linkref.current.value
         }
-        console.log(url);
+       // console.log(url);
         await this.request(url)
     }
     async inputHandle() {
@@ -192,7 +192,7 @@ class FrontPage extends React.Component {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ payload: payload }),
             });
-            console.log(response);
+            //console.log(response);
             if (response.ok) {
                 return 'success'; // Resolve the promise with a string for success
             } else {
@@ -274,8 +274,7 @@ class FrontPage extends React.Component {
                         </SearchButton>
 
                     </InputContainer>
-                    {
-                    console.log(this.state.results)}
+                    
                     { 
                     this.state.results.slice(0, 5).map((obj, index) => {
                         return <ResultCard key={index}
