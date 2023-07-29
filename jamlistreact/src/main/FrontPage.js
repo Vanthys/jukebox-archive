@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+
 import styled from 'styled-components';
 import Card from "./Card";
 import { debounce } from "lodash";
 import ResultCard from "./ResultCard";
 import { ToastContainer, toast } from 'react-toastify';
-import Skeleton, {SkeletonTheme} from 'react-loading-skeleton'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -106,58 +107,53 @@ transition: ease-in-out 0.2s;
 
 const baseurl = 'http://localhost:5000'
 
-class FrontPage extends React.Component {
+const FrontPage = ({user}) => {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            mList: [],
-            results: []
-        };
-        this.linkref = React.createRef();
+    //const [state, setState] = useState({ mList: [], queue: [], results: [] });
+    const [queue, setQueue] = useState([]);
+    const [results, setResults] = useState([]);
+    const linkRef = useRef();
 
-    }
 
-    componentDidMount() {
+
+    useEffect(() => {
+        loadQueue();
+        setInterval(loadQueue, 1000);
+    }, [])
+
+
+    const loadQueue = async () =>{
         fetch(baseurl + '/api/queue/', { mode: 'cors' })
-            .then((response) => response.json())
-            .then((data) => this.setState({ mList: data }));
-
-    }
-    /*
-    componentDidUpdate(){
-        fetch('http://localhost:5000/api/queue',{ mode: 'cors'})
         .then((response) => response.json())
-        .then((data) => this.setState({mList : data}));
+        .then((data) => {setQueue(data)});
     }
-    */
 
-    //THIS IS NOW OBSOLETE
-    async clickHandle() {
+    const clickHandle = async () => {
         let url = {
-            link: this.linkref.current.value
+            link: linkRef.current.value
         }
-       // console.log(url);
-        await this.request(url)
+        //request(url)
     }
-    async inputHandle() {
+    const inputHandle = async () => {
 
-        if (this.linkref.current !== null) {
-            if (this.linkref.current.value !== '') {
-                this.setState({results: new Array(5).fill(null)});
-                console.log("should now reload");
-                this.debouncedSearch(this.linkref.current.value)
+        if (linkRef.current !== null) {
+            if (linkRef.current.value !== '') {
+                setResults(new Array(5).fill(null));
+                //setState({ results: new Array(5).fill(null) });
+                //console.log("should now reload");
+                debouncedSearch(linkRef?.current?.value)
             }
             else {
-                this.setState({ results: [] })
+                setResults([]);                
             }
         }
         else {
-            this.setState({ results: [] })
+            setResults([]);
+            //setState({ results: [] })
         }
     }
 
-    async search(data) {
+    const search = async (data) => {
         const response = await fetch(baseurl + '/api/search/', {
             method: 'POST',
             mode: 'cors',
@@ -170,7 +166,7 @@ class FrontPage extends React.Component {
         return response.json();
 
     }
-    async queue(payload) {
+    /* const queue = async (payload) => {
         const response = await fetch(baseurl + '/api/queue/',
             {
                 method: 'POST',
@@ -182,15 +178,15 @@ class FrontPage extends React.Component {
                 body: JSON.stringify({ payload: payload })
             })
         return response.json();
-    }
+    } */
 
-    async submitRequest(payload) {
+    const submitRequest = async (payload) => {
         try {
             const response = await fetch(baseurl + '/api/queue/', {
                 method: 'POST',
                 mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ payload: payload }),
+                body: JSON.stringify({ payload: payload, user: user }),
             });
             //console.log(response);
             if (response.ok) {
@@ -206,33 +202,35 @@ class FrontPage extends React.Component {
     //     fetch(baseurl + '/api/queue/',{method: 'POST',mode: 'cors',headers: {'Content-Type': 'application/json'},
     //             body: JSON.stringify({payload : payload})})
     //         }
-    async reqeuestQueue(payload) {
+    const reqeuestQueue = async (payload) => {
         try {
-            await toast.promise(this.submitRequest(payload), {
+            await toast.promise(submitRequest(payload), {
                 pending: 'Request is pending...',
                 success: 'Request submitted 🎵',
                 error: 'Request rejected 🤯'
 
             })
-                .then(fetch(baseurl + '/api/queue/', { mode: 'cors' })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        this.setState({ mList: data })
-                        this.linkref.current.value = "";
-                        this.setState({ results: [] });
-                    })
-                ).catch(console.log("fetch failed"));
         }
         catch (e) {
             console.log("fetch failed");
         }
+
+        await fetch(baseurl + '/api/queue/', { mode: 'cors' })
+            .then((response) => response.json())
+            .then((data) => {
+                linkRef.current.value = "";
+                setQueue(data);
+                setResults([]);
+            }).catch(() => console.log("error"))
+
     };
 
-    debouncedSearch = debounce(async (input) => {
-        await this.search(this.linkref.current.value).then((result) => {
-            if (this.linkref.current.value !== "")
-                this.setState({ results: result})
 
+    
+    const debouncedSearch = debounce(async (input) => {
+        await search(linkRef.current.value).then((result) => {
+            if (linkRef.current.value !== "")
+                setResults([...result])
         }
 
         ).catch(() => {
@@ -241,55 +239,40 @@ class FrontPage extends React.Component {
     }, 200);
 
 
-    // async request(data) {
-    //     // Default options are marked with *
-    //     const response = await fetch(baseurl + '/api/request/', {
-    //       method: 'POST',
-    //       mode: 'cors', // no-cors, *cors, same-origin
-    //       cache: 'no-cache',
-    //       headers: {
-    //         'Content-Type': 'application/json'
-    //       },
-    //       body: JSON.stringify(data) // body data type must match "Content-Type" header
-    //     });
-    //     return response.json(); // parses JSON response into native JavaScript objects
-    // }
 
 
 
     //https://www.youtube.com/watch?v=fNPCmbDYY80
-    render() {
-        return (
-            <SkeletonTheme baseColor="#202020" highlightColor="#444">
+    return (
+        <SkeletonTheme baseColor="#202020" highlightColor="#444">
             <Container>
-                <h1 style={{"fontFamily": "'Lobster', cursive"}}>Jukebox</h1>
+                <h1 style={{ "fontFamily": "'Lobster', cursive" }}>Jukebox</h1>
                 <SearchContainer>
                     <InputContainer>
                         <Spacer />
-                        <SearchBar ref={this.linkref} placeholder="Search for title..." aria-placeholder="Search for title..."
-                            onChange={() => this.inputHandle()}
+                        <SearchBar ref={linkRef} placeholder="Search for title..." aria-placeholder="Search for title..."
+                            onChange={() => inputHandle()}
                         />
-                        <SearchButton onClick={() => this.clickHandle()}>
+                        <SearchButton>
                             <span role="img" aria-label="Add">🔍</span>
                         </SearchButton>
 
                     </InputContainer>
-                    
-                    { 
-                    this.state.results.slice(0, 5).map((obj, index) => {
-                        return <ResultCard key={index}
-                            payload={obj} onClick={(payload) => this.reqeuestQueue(payload)}
-                        />;
-                    })}
-                </SearchContainer>
-               
 
-                <p>{this.state.mList.length > 0 ? "" : "Search for songs and queue them."}</p>
-                {this.state.mList.map((obj, index) => {
-                    
-                    return <Card payload={obj} key={index} />;
+                    {
+                        results.slice(0, 5).map((obj, index) => {
+                            return <ResultCard key={index}
+                                payload={obj} onClick={(payload) => reqeuestQueue(payload)}
+                            />;
+                        })}
+                </SearchContainer>
+
+
+                <p style={{ opacity: 0.7 }}>{queue.length > 0 ? "" : "Search for songs and queue them"}</p>
+                {queue.map((obj, index) => {
+                    return <Card song={obj.song} votes={obj.votes} voted={obj.votes.includes(user)} userid={user} loadQueue={loadQueue} key={index} />;
                 })}
-                
+
 
                 <ToastContainer
                     position="bottom-right"
@@ -305,8 +288,8 @@ class FrontPage extends React.Component {
                 />
             </Container>
         </SkeletonTheme>
-        );
-    }
+    );
+
 
 }
 export default FrontPage;

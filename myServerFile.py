@@ -79,19 +79,48 @@ def convert_video_song(video_metadata):
 
 queue = []
 
+userids = []
+
+@api.route('/api/logon/', methods=['GET'])
+def logon():
+    newid = "user" + str(len(userids)+1) #god i fucking hate python 
+    userids.append(newid)
+    return json.dumps(newid, default=lambda obj: obj.__dict__)
+
+@api.route('/api/vote/', methods=['POST'])
+def receive_vote():
+    jsonres = json.loads(request.data)
+    song = jsonres["payload"]
+    user = jsonres["user"]
+    for entry in queue:
+        if entry['song'] == song:
+            if user in entry['votes']:
+                entry['votes'].remove(user)
+            else:
+                entry['votes'].append(user)
+            return "Success", 200
+    else:
+        return "Entry not found, have you requested the song?", 400
+
 @api.route('/api/queue/', methods=['POST'])
 def add_queue():
     jsonres = json.loads(request.data)
     song = jsonres["payload"]
-    if song not in queue:
-        queue.append(song)
+    user = jsonres["user"]
+    entry = {'song': song, 'votes' : [user]} 
+    if not any(item['song'] == song for item in queue):
+        queue.append(entry)
     else:
-        print(song)
+        for entry in queue:
+            if entry['song'] == song:  
+                entry['votes'].append(user)
+                break
     print(queue)
     return queue
 
 @api.route('/api/queue/', methods=['GET'])
 def get_queue():
+    print(queue)
     return queue
 
 @api.route("/")
@@ -104,13 +133,10 @@ def get_companies():
 
 @api.route('/api/search/', methods=['POST'])
 def get_results():
-    print("hi")
     user_search = str(request.data)[2:-1]
     print(user_search)
     search_results = ytmusic.search(user_search, filter="songs", limit=10)
-    print("founders")
     #search_result_list = json.JSONDecoder.decode(search_results)
-    print("converted results")
     songs = []
     for search_result in search_results:
         try:

@@ -44,7 +44,6 @@ min-width:3em;
 min-height:3em;
 max-width:3em;
 max-height:3em;
-
 `;
 
 function ResultCard({payload, onClick}){
