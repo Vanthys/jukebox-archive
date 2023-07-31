@@ -124,8 +124,24 @@ const FrontPage = ({user}) => {
 
     const loadQueue = async () =>{
         fetch(baseurl + '/api/queue/', { mode: 'cors' })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Failed to fetch the queue");
+            }
+            return response.json();
+        })
+        .then((data) => {
+            setQueue(data);
+        })
+        .catch((error) => {
+            console.log("Error:", error.message);
+        })
+        /*
+        fetch(baseurl + '/api/queue/', { mode: 'cors' })
+        .catch((e) => console.log("failed to load queue"))
         .then((response) => response.json())
-        .then((data) => {setQueue(data)});
+        .then((data) => {setQueue(data)})
+        */
     }
 
     const clickHandle = async () => {
