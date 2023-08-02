@@ -66,7 +66,8 @@ function ResultCard({payload, onClick}){
     };
 
     function OnError(){
-        setImgsrc(payload.album_arts[1].link);
+
+        setImgsrc(payload?.album_arts[1]?.link ?? "none.png");
     }
     
     function truncate(text, maxlength){

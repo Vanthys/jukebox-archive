@@ -106,7 +106,7 @@ transition: ease-in-out 0.2s;
 
 
 const baseurl = 'http://localhost:5000'
-
+let loadFun;
 const FrontPage = ({user}) => {
 
     //const [state, setState] = useState({ mList: [], queue: [], results: [] });
@@ -114,11 +114,22 @@ const FrontPage = ({user}) => {
     const [results, setResults] = useState([]);
     const linkRef = useRef();
 
-
+    const setQueueInterval = () => {
+        loadFun = setInterval(loadQueue, 1000);
+    }
+    const clearQueueInterval = () => {
+        clearInterval(loadFun)
+    }
 
     useEffect(() => {
         loadQueue();
-        setInterval(loadQueue, 1000);
+        setQueueInterval();
+        window.addEventListener("focus", setQueueInterval);
+        window.addEventListener("blur", clearQueueInterval);
+        return () => {
+            window.removeEventListener("focus", setQueueInterval);
+            window.removeEventListener("blur", clearQueueInterval);
+        }
     }, [])
 
 

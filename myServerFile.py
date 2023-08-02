@@ -2,12 +2,19 @@ import string
 from tokenize import String
 from flask import Flask, json
 from flask_cors import CORS
-from ytmusicapi import YTMusic
+from ytmusicapi import YTMusic, setup as ytsetup 
 from flask import request
 from json import JSONEncoder
 
-ytmusic = YTMusic()
-
+ytmusic = YTMusic("oauth.json")
+global playlistId
+try:
+    with open("playlist.config", 'r') as file:
+            playlistId = file.read()
+            
+except Exception as e:
+        print(f"Error: {e}")
+        
 
 companies = [{"id": 1, "name": "Company One"}, {"id": 2, "name": "Company Two"}]
 
@@ -78,8 +85,35 @@ def convert_video_song(video_metadata):
     return song
 
 queue = []
-
 userids = []
+
+
+def sort_queue_by_votes(arr):
+    return sorted(arr, key=lambda x: x["votes"], reverse=True)
+
+def sort_playlist():
+    serverqueue = ytmusic.get_playlist(playlistId, limit=None)["tracks"]
+    idserverqueue = [entry["videoId"] for entry in serverqueue]
+
+    #index_map = {elem: i for i, elem in enumerate(idserverqueue)}
+    copyqueue_sorted = sort_queue_by_votes(queue)
+    idqueue = [entry["song"]["videoId"] for entry in copyqueue_sorted]
+    # Iterate through arr1 and move the elements in arr2 to match the order in arr1
+    for id, index in idqueue:
+        if id in idserverqueue:
+
+            if idserverqueue.index(id) == idqueue.index(id):
+
+            ytmusic.edit_playlist(playlistId=playlistId, moveItem= [str, str])
+
+    for entry in reversed(queue):
+        print(entry["song"]["videoId"])
+    
+
+def sync():
+    #sort queue
+    #sync to playlist
+    return 0
 
 @api.route('/api/logon/', methods=['GET'])
 def logon():
@@ -120,8 +154,28 @@ def add_queue():
 
 @api.route('/api/queue/', methods=['GET'])
 def get_queue():
-    print(queue)
+    #print(queue)
     return queue
+
+
+
+@api.route('/api/init/', methods=['POST'])
+def initialize():
+    #jsonres = json.loads(request.data)
+    #headers = ytsetup("config.json", headers_raw=jsonres["auth"])
+    #global ytmusic,
+    global playlistId
+    #ytmusic = YTMusic(headers)
+    playlistId = ytmusic.create_playlist("Jukebox", "Jukebox test playlist")
+    try:
+        with open("playlist.config", 'w') as file:
+            file.write(playlistId)
+    except Exception as e:
+        print(f"Error: {e}")
+    return playlistId
+
+
+
 
 @api.route("/")
 def helloWorld():

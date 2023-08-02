@@ -1,8 +1,9 @@
 import './App.css';
 import FrontPage from './main/FrontPage.js'
+import AdminPage from './admin/AdminPage';
 import React, { useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const baseurl = 'http://localhost:5000'
 
@@ -28,7 +29,12 @@ function App() {
   return (
     <CookiesProvider>
       {cookies.user}
-      <FrontPage user={cookies.user || "default"} />
+      <BrowserRouter>
+      <Routes>
+      <Route path="/" element={<FrontPage user={cookies.user || "default"} />} />
+      <Route path="/admin" element={<AdminPage user={cookies.user || "default"} />} />
+      </Routes>
+      </BrowserRouter>
     </CookiesProvider>
   );
 }
