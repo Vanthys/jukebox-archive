@@ -60,7 +60,7 @@ const AdminPage = () =>{
         <Container>
         <List>
             <ListItem>
-            <h1 style={{ "fontFamily": "'Lobster', cursive" }}>Jukebox - Settings</h1>
+            <h1 style={{ "fontFamily": "'Lobster', cursive" }}>Jukebox - AdminPage</h1>
             </ListItem>
             <ListItem>
             <label for="headers">Headers</label>
@@ -73,10 +73,14 @@ const AdminPage = () =>{
                 </block>
             </ListItem>
             <ListItem>
-                
-                    <button>Clear Queue</button>
-                
+                <List>
+                    
+                </List>
             </ListItem>
+            <ListItem>
+                    <button>Clear Queue</button>
+            </ListItem>
+            
             
 
         </List>

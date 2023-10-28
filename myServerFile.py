@@ -99,15 +99,25 @@ def sort_playlist():
     copyqueue_sorted = sort_queue_by_votes(queue)
     idqueue = [entry["song"]["videoId"] for entry in copyqueue_sorted]
     # Iterate through arr1 and move the elements in arr2 to match the order in arr1
-    for id, index in idqueue:
+    #last_item_server = idserverqueue[-1]
+    last_item_queue = idqueue[-1]
+    for video, index in idqueue:
+        if index != -1:
+            ytmusic.edit_playlist(playlistId=playlistId, moveItem= [video, last_item_queue])
+    
+
+
+""" 
+    for video in reversed(idqueue):
+
         if id in idserverqueue:
 
             if idserverqueue.index(id) == idqueue.index(id):
 
             ytmusic.edit_playlist(playlistId=playlistId, moveItem= [str, str])
-
-    for entry in reversed(queue):
+for entry in reversed(queue):
         print(entry["song"]["videoId"])
+ """
     
 
 def sync():
